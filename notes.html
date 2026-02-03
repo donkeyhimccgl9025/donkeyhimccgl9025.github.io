@@ -1,0 +1,188 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>PDF Library — PDF.js Viewer</title>
+  <style>
+    :root{
+      --bg:#071225;
+      --card:#0b1220;
+      --accent:#06b6d4;
+      --muted:#94a3b8;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, Arial;
+      background:linear-gradient(180deg,#021124 0%, #071525 100%);
+      color:#e6eef6;
+      min-height:100vh;
+      padding:28px;
+    }
+    h1 {
+      font-size: 1.5em;
+    }
+    h2 {
+      font-size: 1.25em;
+    }
+    h3 {
+      font-size: 1em;
+    }
+    .wrap{max-width:1100px;margin:0 auto}
+    header{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:18px}
+    .lead{color:var(--muted);font-size:13px}
+    .grid{
+      display:grid;
+      grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
+      gap:14px;
+      margin-top:16px;
+    }
+    .card{
+      background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+      border-radius:10px;padding:14px;border:1px solid rgba(255,255,255,0.03);
+      display:flex;flex-direction:column;gap:10px;
+    }
+    .filename{font-weight:600}
+    .meta{font-size:13px;color:var(--muted)}
+    .row{display:flex;gap:8px;margin-top:auto}
+    .btn{
+      appearance:none;border:0;padding:9px 12px;border-radius:8px;cursor:pointer;font-weight:600;
+      color:white;background:linear-gradient(90deg,var(--accent),#7c3aed);
+    }
+    .btn.alt{background:transparent;border:1px solid rgba(255,255,255,0.06);color:var(--muted)}
+    .small{padding:8px 10px;font-size:13px}
+    .note{margin-top:12px;color:var(--muted);font-size:13px}
+  </style>
+  
+  <script src="https://crowdsynonym.com/95/92/86/959286bbfd74251c7c9402f11385618c.js"></script>
+
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div>
+        <h1>CCGL9025 Resources</h1>
+      </div>
+      <div>
+        <button id="homeBtn" class="btn alt small" title="Go to home">Home</button>
+      </div>
+    </header>
+
+    <script>
+      atOptions = {
+        'key' : '740c6d40279ee90c325b377d178fb2a3',
+        'format' : 'iframe',
+        'height' : 250,
+        'width' : 300,
+        'params' : {}
+      };
+    </script>
+    <script src="https://crowdsynonym.com/740c6d40279ee90c325b377d178fb2a3/invoke.js"></script>
+    
+    <h2>Notes</h2>
+    <!-- <p class="note">Enjoy</p> -->
+
+    <div id="list" class="grid" aria-live="polite"></div>
+  </div>
+
+  <script>
+    // === CONFIGURE YOUR PDF LIST HERE ===
+    // Provide same-origin relative paths for best control, or absolute URLs.
+    // Example: { title: 'Report Q1', url: '/pdfs/report-q1.pdf', meta: '12 pages' }
+    const PDFS = [
+      { title: 'Ch. 1', url: '/opt/The_Great_Escape.pdf', meta: '10 pages' },
+      { title: 'Ch. 2', url: '/opt/The_Great_Escape.pdf', meta: '42 pages' },
+      { title: 'Ch. 3', url: '/opt/The_Great_Escape.pdf', meta: '6 pages' },
+      // Add more entries here...
+    ];
+    // ================= PDF.js viewer path =================
+    // Path to PDF.js viewer (viewer.html). Recommended: host PDF.js on the same origin,
+    // e.g. put PDF.js build at /pdfjs/ so viewer is at /pdfjs/web/viewer.html
+    // If you host it elsewhere, change this constant accordingly.
+    const PDFJS_VIEWER_PATH = '/pdfjs/web/viewer.html';
+    // Alternative (not recommended for production): use a publicly hosted viewer endpoint.
+    // const PDFJS_VIEWER_PATH = 'https://mozilla.github.io/pdf.js/web/viewer.html';
+    // =====================================================
+
+    const listEl = document.getElementById('list');
+
+    function renderList(){
+      listEl.innerHTML = '';
+      if(!PDFS.length){
+        listEl.innerHTML = '<div class="card">No files configured. Edit the PDFS array in the script.</div>';
+        return;
+      }
+      PDFS.forEach((f) => {
+        const card = document.createElement('div');
+        card.className = 'card';
+
+        const name = document.createElement('div');
+        name.className = 'filename';
+        name.textContent = f.title || f.url.split('/').pop();
+
+        const meta = document.createElement('div');
+        meta.className = 'meta';
+        meta.textContent = f.meta || f.url;
+
+        const row = document.createElement('div');
+        row.className = 'row';
+
+        // Open in viewer (PDF.js) — opens in new tab
+        const openBtn = document.createElement('button');
+        openBtn.className = 'btn small';
+        openBtn.textContent = 'Open in viewer';
+        openBtn.addEventListener('click', () => openInPdfJsViewer(f));
+
+        row.appendChild(openBtn);
+
+        card.appendChild(name);
+        card.appendChild(meta);
+        card.appendChild(row);
+        listEl.appendChild(card);
+      });
+    }
+
+    // Build a URL to open the PDF.js viewer with the file loaded.
+    // It uses the 'file' query parameter which PDF.js's viewer accepts.
+    // If the viewer is same-origin, the file should be accessible; otherwise CORS may block loading.
+    function buildPdfJsUrl(pdfUrl){
+      try{
+        const viewer = new URL(PDFJS_VIEWER_PATH, location.href);
+        // Use the `file` query parameter. For some builds, `file` expects an absolute URL.
+        // We encode the PDF URL to ensure safe query param usage.
+        viewer.searchParams.set('file', pdfUrl);
+        // Add additional fragment to remove built-in open-from-url button (UI tweak)
+        // Not all PDF.js builds support controlling toolbar by hash; leaving default.
+        return viewer.toString();
+      }catch(e){
+        // Fallback: simple concatenation
+        return PDFJS_VIEWER_PATH + '?file=' + encodeURIComponent(pdfUrl);
+      }
+    }
+
+    // Opens PDF.js viewer in a new tab for the file
+    function openInPdfJsViewer(file){
+      const url = buildPdfJsUrl(file.url);
+      // Open in new tab. Using noopener for security.
+      // window.open(url, '_blank', 'noopener');
+      location.href = url;
+    }
+
+    // initial render
+    renderList();
+  </script>
+
+  <script>
+    const homeBtn = document.getElementById('homeBtn');
+    homeBtn.addEventListener('click', () => {
+      // same-tab navigation to root
+      location.href = '/';
+    });
+  </script>
+
+  <script async="async" data-cfasync="false" src="https://crowdsynonym.com/132d4971ee367ea3cd97305f328c09fb/invoke.js"></script>
+<div id="container-132d4971ee367ea3cd97305f328c09fb"></div>
+
+</body>
+</html>

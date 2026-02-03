@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Links — Vertical Button List</title>
+  <style>
+    :root{
+      --bg:#071225;
+      --card:#0b1220;
+      --accent:#06b6d4;
+      --accent-2:#7c3aed;
+      --muted:#94a3b8;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, Arial;
+      background:linear-gradient(180deg,#021124 0%, #071525 100%);
+      color:#e6eef6;
+      min-height:100vh;
+      padding:28px;
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+    }
+    .wrap{max-width:760px;margin:0 auto}
+    header{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:18px}
+    
+    .lead{color:var(--muted);font-size:13px}
+    .card{
+      background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+      border-radius:10px;padding:18px;border:1px solid rgba(255,255,255,0.03);
+      box-shadow:0 8px 30px rgba(2,6,23,0.45);
+    }
+
+    .btn-list{
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+      margin-top:12px;
+    }
+    .link-btn{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      width:100%;
+      padding:14px 16px;
+      border-radius:10px;
+      border:0;
+      cursor:pointer;
+      font-weight:700;
+      color:white;
+      background:linear-gradient(90deg,var(--accent),var(--accent-2));
+      text-decoration:none;
+      font-size:15px;
+      box-shadow:0 8px 22px rgba(7,125,145,0.12);
+      transition:transform .08s ease, box-shadow .12s ease;
+    }
+    .link-btn:active{transform:translateY(1px)}
+    .link-btn.secondary{
+      background:transparent;
+      color:var(--muted);
+      border:1px solid rgba(255,255,255,0.05);
+      box-shadow:none;
+    }
+
+    .btn{
+      appearance:none;border:0;padding:9px 12px;border-radius:8px;cursor:pointer;font-weight:600;
+      color:white;background:linear-gradient(90deg,var(--accent),#7c3aed);
+    }
+
+    .btn.alt{background:transparent;border:1px solid rgba(255,255,255,0.06);color:var(--muted)}
+
+    .small{padding:8px 10px;font-size:13px}
+
+    .note{margin-top:12px;color:var(--muted);font-size:13px}
+
+    @media (max-width:480px){
+      .wrap{padding:0 12px}
+      .link-btn{font-size:14px;padding:12px}
+    }
+  </style>
+
+  <script src="https://crowdsynonym.com/95/92/86/959286bbfd74251c7c9402f11385618c.js"></script>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div>
+        <h1>CCGL9025 Resources</h1>
+      </div>
+      <div>
+        <button id="homeBtn" class="btn alt small" title="Go to home">Home</button>
+      </div>
+    </header>
+
+    <div class="card" role="region" aria-label="Links">
+      <div id="buttons" class="btn-list" aria-live="polite">
+        <!-- Buttons injected here -->
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Configure your buttons here.
+    // Each entry: { name: 'Button label', url: 'https://example.com', style: 'primary'|'secondary' (optional) }
+    const LINKS = [
+      { name: 'Notes', url: '/notes.html', style: 'primary' },
+      { name: 'Exercises', url: '/exercises.html', style: 'primary' },
+      // Add more links as needed
+    ];
+
+    const container = document.getElementById('buttons');
+
+    function renderButtons(){
+      container.innerHTML = '';
+      if(!LINKS.length){
+        const empty = document.createElement('div');
+        empty.textContent = 'No links configured. Edit the LINKS array in the script.';
+        empty.style.color = 'var(--muted)';
+        container.appendChild(empty);
+        return;
+      }
+
+      LINKS.forEach((item, idx) => {
+        const a = document.createElement('a');
+        a.className = 'link-btn' + (item.style === 'secondary' ? ' secondary' : '');
+        a.textContent = item.name || ('Link ' + (idx + 1));
+        a.href = item.url || '#';
+
+        container.appendChild(a);
+      });
+    }
+
+    renderButtons();
+  </script>
+
+  <script>
+    const homeBtn = document.getElementById('homeBtn');
+    homeBtn.addEventListener('click', () => {
+      // same-tab navigation to root
+      location.href = '/';
+    });
+  </script>
+
+</body>
+</html>
