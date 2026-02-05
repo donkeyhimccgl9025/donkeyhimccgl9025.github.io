@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  
+  <!-- Homepage -->
+  <url>
+    <loc>https://donkeyhimccgl9025.github.io/</loc>
+    <changefreq>always</changefreq>
+    <priority>1.00</priority>
+  </url>
+
+  <!-- Notes -->
+  <url>
+    <loc>https://donkeyhimccgl9025.github.io/notes.html</loc>
+    <changefreq>always</changefreq>
+    <priority>0.90</priority>
+  </url>
+
+</urlset>
